@@ -87,12 +87,28 @@ $result = $stmt->get_result();
         <tbody>
             <?php if ($result->num_rows > 0): ?>
                 <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['fullname']) ?></td>
-                        <td><?= $row['session_count'] ?></td>
-                        <td>₱<?= $row['total_price'] ?></td>
-                        <td><?= date('Y-m-d H:i', strtotime($row['booked_at'])) ?></td>
-                    </tr>
+                   <tr>
+    <td><?= htmlspecialchars($row['fullname']) ?></td>
+    <td><?= $row['session_count'] ?></td>
+    <td>₱<?= $row['total_price'] ?></td>
+    <td>
+        <?= date('Y-m-d H:i', strtotime($row['booked_at'])) ?>
+        
+        <!-- Update Button -->
+        <a href="update_booking.php?id=<?= $row['id'] ?>" 
+           style="padding:6px 10px; background:#4CAF50; color:white; border-radius:5px; text-decoration:none; margin-left:10px; font-size:13px;">
+           Update
+        </a>
+
+        <!-- Cancel Button -->
+        <a href="cancel_booking.php?id=<?= $row['id'] ?>" 
+           style="padding:6px 10px; background:#e74c3c; color:white; border-radius:5px; text-decoration:none; margin-left:5px; font-size:13px;"
+           onclick="return confirm('Are you sure you want to cancel this booking?');">
+           Cancel
+        </a>
+    </td>
+</tr>
+
                 <?php endwhile; ?>
             <?php else: ?>
                 <tr><td colspan="4">No bookings yet.</td></tr>
