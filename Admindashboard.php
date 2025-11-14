@@ -42,9 +42,10 @@ if (isset($_GET['delete'])) {
     // Redirect to avoid re-submitting the form if the page is refreshed
     header("Location:" . $_SERVER['PHP_SELF']);
     exit;
+  
 }
-
 $users = $conn->query("SELECT * FROM users");
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -115,19 +116,19 @@ $users = $conn->query("SELECT * FROM users");
           </tr>
         </thead>
         <tbody id="users-table-body">
-          <?php while ($row = $users->fetch_assoc()): ?>
-            <tr>
-              <td><?= $row['id'] ?></td>
-              <td><?= $row['fullname'] ?></td>
-              <td><?= $row['email'] ?></td>
-              <td><?= $row['password'] ?></td>
-              <td>
-                <a href="?edit=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
-                <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
-                   onclick="return confirm('Delete this user?')">Delete</a>
-              </td>
-            </tr>
-          <?php endwhile; ?>
+         <?php while ($row = $users->fetch_assoc()): ?>
+  <tr>
+    <td><?= $row['id'] ?></td>
+    <td><?= $row['fullname'] ?></td>
+    <td><?= $row['email'] ?></td>
+    <td>********</td>  <!-- Password hidden -->
+    <td>
+      <a href="?edit=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+      <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
+         onclick="return confirm('Delete this user?')">Delete</a>
+    </td>
+  </tr>
+<?php endwhile; ?>
         </tbody>
       </table>
     </div>
