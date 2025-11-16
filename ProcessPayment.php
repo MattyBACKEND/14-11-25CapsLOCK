@@ -1,5 +1,26 @@
 <?php
-// Define all valid membership options and their corresponding prices
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['client_id'])) {
+    die("Error: No client logged in.");
+}
+
+$client_id = $_SESSION['client_id'];
+
+// Connect to database
+$conn = new mysqli("localhost", "root", "", "ecg_fitness");
+if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
+
+// Fetch fullname of client
+$stmt = $conn->prepare("SELECT fullname FROM users WHERE id = ?");
+$stmt->bind_param("i", $client_id);
+$stmt->execute();
+$stmt->bind_result($client_name);
+$stmt->fetch();
+$stmt->close();
+
+// Define membership options
 $membershipOptions = [
     "student_1year"       => ["label" => "Student - 1 Year", "price" => 499],
     "student_lifetime"    => ["label" => "Student - Lifetime", "price" => 1999],
@@ -15,45 +36,42 @@ $membershipOptions = [
     "nonstudent_12months" => ["label" => "Non-Student - 12 Months", "price" => 12999],
 ];
 
-// Check if the form was submitted and a valid membership was selected
+// Process membership selection
+// Process membership selection
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["membership"])) {
     $selected = $_POST["membership"];
 
     if (array_key_exists($selected, $membershipOptions)) {
         $membershipLabel = $membershipOptions[$selected]["label"];
         $price = $membershipOptions[$selected]["price"];
+        $payment_type = "Paypal"; // Default payment type set to PayPal
 
+        // Insert into payment_transaction with current timestamp
+        $stmt = $conn->prepare("
+            INSERT INTO payment_transaction (Time, client_id, Training, Amount, Payment_type)
+            VALUES (NOW(), ?, ?, ?, ?)
+        ");
+        $stmt->bind_param("isds", $client_id, $membershipLabel, $price, $payment_type);
+        $stmt->execute();
+        $stmt->close();
+
+        // Display confirmation page
         echo "<!DOCTYPE html>
         <html lang='en'>
         <head>
             <meta charset='UTF-8'>
             <title>Payment Confirmation</title>
             <style>
-                body {
-                    background-color: #1e1e1e;
-                    color: #f1f1f1;
-                    font-family: Arial, sans-serif;
-                    padding: 20px;
-                }
-                .confirmation {
-                    background-color: #2c2c2c;
-                    border: 1px solid #444;
-                    padding: 20px;
-                    border-radius: 10px;
-                }
-                h2 {
-                    color:rgb(186,189,52);
-                }
-
-                .btn-dashboard {
-
-                    color: rgb(186,189,52);
-                }
+                body { background-color: #1e1e1e; color: #f1f1f1; font-family: Arial, sans-serif; padding: 20px; }
+                .confirmation { background-color: #2c2c2c; border: 1px solid #444; padding: 20px; border-radius: 10px; }
+                h2 { color: rgb(186,189,52); }
+                .btn-dashboard { color: rgb(186,189,52); text-decoration: none; display: inline-block; margin-top: 15px; }
             </style>
         </head>
         <body>
             <div class='confirmation'>
                 <h2>Payment Summary</h2>
+                <p><strong>Client Name:</strong> {$client_name}</p>
                 <p><strong>Membership Selected:</strong> {$membershipLabel}</p>
                 <p><strong>Price:</strong> ₱{$price}</p>
                 <p>Thank you for choosing a membership.</p>
@@ -67,4 +85,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["membership"])) {
 } else {
     echo "No membership option selected. Please go back and choose a plan.";
 }
+
 ?>

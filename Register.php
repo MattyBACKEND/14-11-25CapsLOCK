@@ -36,14 +36,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
     $result = $checkStmt->get_result();
 
     if ($result->num_rows > 0) {
-        $checkStmt->close(); // ✅ close before exiting
+        $checkStmt->close();
         $conn->close();
         $_SESSION['error_message'] = 'This email is already registered.';
         header("Location: Register.php");
         exit();
     }
 
-    // Proceed to insert new user
+    // Insert new user
     $stmt = $conn->prepare("
         INSERT INTO users (
             fullname, email, password,
@@ -66,9 +66,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
     );
 
     if ($stmt->execute()) {
+        // ✅ Set session for logged-in client
+        $client_id = $stmt->insert_id;
+        $_SESSION['client_id'] = $client_id;
+        $_SESSION['client_name'] = $fullname; // optional
+
         $stmt->close();
         $checkStmt->close();
         $conn->close();
+
         $_SESSION['success_message'] = 'Registration successful!';
         header("Location: MembershipPayment.php");
         exit();
@@ -83,6 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
