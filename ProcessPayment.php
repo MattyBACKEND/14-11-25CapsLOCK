@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+// SEND RECEIPT EMAIL -------------------------
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
+
 // Check if user is logged in
 if (!isset($_SESSION['client_id'])) {
     die("Error: No client logged in.");
@@ -12,11 +16,11 @@ $client_id = $_SESSION['client_id'];
 $conn = new mysqli("localhost", "root", "", "ecg_fitness");
 if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
-// Fetch fullname of client
-$stmt = $conn->prepare("SELECT fullname FROM users WHERE id = ?");
+// Fetch fullname & email of client
+$stmt = $conn->prepare("SELECT fullname, email FROM users WHERE id = ?");
 $stmt->bind_param("i", $client_id);
 $stmt->execute();
-$stmt->bind_result($client_name);
+$stmt->bind_result($client_name, $client_email);
 $stmt->fetch();
 $stmt->close();
 
@@ -37,7 +41,6 @@ $membershipOptions = [
 ];
 
 // Process membership selection
-// Process membership selection
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["membership"])) {
     $selected = $_POST["membership"];
 
@@ -54,6 +57,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["membership"])) {
         $stmt->bind_param("isds", $client_id, $membershipLabel, $price, $payment_type);
         $stmt->execute();
         $stmt->close();
+
+        require 'PHPMailer/src/Exception.php';
+        require 'PHPMailer/src/PHPMailer.php';
+        require 'PHPMailer/src/SMTP.php';
+
+        $mail = new PHPMailer(true);
+
+        try {
+            // Server settings
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'ecgsender@gmail.com'; // your gmail
+            $mail->Password   = 'aevyinvepakvvpxz';     // gmail app password
+            $mail->SMTPSecure = 'ssl';
+            $mail->Port       = 465;
+
+            // Recipients
+            $mail->setFrom('ecgsender@gmail.com', 'ECG Fitness');
+            $mail->addAddress($client_email, $client_name);
+
+            // Email content
+            $mail->isHTML(true);
+            $mail->Subject = 'Payment Receipt - ECG Fitness';
+            $mail->Body = "
+                <h2>ECG Fitness Payment Receipt</h2>
+                <p><strong>Name:</strong> {$client_name}</p>
+                <p><strong>Membership:</strong> {$membershipLabel}</p>
+                <p><strong>Amount Paid:</strong> ₱{$price}</p>
+                <p><strong>Payment Method:</strong> Paypal</p>
+                <p><strong>Date:</strong> " . date('Y-m-d H:i:s') . "</p>
+                <hr>
+                <p>Thank you for your purchase!</p>
+            ";
+
+            $mail->send();
+
+        } catch (Exception $e) {
+            error_log("Email could not be sent. Error: {$mail->ErrorInfo}");
+        }
+        // --------------------------------------------------------
 
         // Display confirmation page
         echo "<!DOCTYPE html>
@@ -74,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["membership"])) {
                 <p><strong>Client Name:</strong> {$client_name}</p>
                 <p><strong>Membership Selected:</strong> {$membershipLabel}</p>
                 <p><strong>Price:</strong> ₱{$price}</p>
-                <p>Thank you for choosing a membership.</p>
+                <p>A receipt has been sent to your email.</p>
                 <a href='loginpage.php' class='btn-dashboard'>Go to Login</a>
             </div>
         </body>
@@ -85,5 +129,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["membership"])) {
 } else {
     echo "No membership option selected. Please go back and choose a plan.";
 }
-
 ?>
