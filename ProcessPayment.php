@@ -58,9 +58,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["membership"])) {
         $stmt->execute();
         $stmt->close();
 
-        require 'PHPMailer/src/Exception.php';
-        require 'PHPMailer/src/PHPMailer.php';
-        require 'PHPMailer/src/SMTP.php';
+        require 'PHPMailer-Master/src/PHPMailer.php';
+        require 'PHPMailer-Master/src/SMTP.php';
+        require 'PHPMailer-Master/src/Exception.php';
 
         $mail = new PHPMailer(true);
 

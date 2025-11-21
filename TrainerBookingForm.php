@@ -121,7 +121,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="flex"><span>Time:</span><span id="payTime">—</span></div>
   <div class="flex"><span>Sessions:</span><span id="paySessions">—</span></div>
   <div class="flex"><span>Total:</span><span id="payPrice">₱0</span></div>
-  <button id="payBtn" class="btn">Pay Now</button>
+
+  <!-- PAYPAL BUTTON -->
+  <div id="paypal-container-NVCYWM4K27QHW" style="margin-top:15px;"></div>
 
   <div class="receipt" id="receipt">
     <div class="success">Payment Successful!</div>
@@ -132,6 +134,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="flex"><span>Total Paid:</span><span id="receiptPrice">₱0</span></div>
   </div>
 </div>
+
+<!-- PAYPAL PAYMENT BUTTON -->
+<script
+  src="https://www.paypal.com/sdk/js?client-id=BAAw8_HGuKNx5bQqABjtgfVSFBYYCnvdjXDbvkjbgjfGsnT_ktu98RhnLwPo5tcJ7jrN34AC2uB7srIl2U&components=hosted-buttons&disable-funding=venmo&currency=PHP">
+</script>
+
+<script>
+paypal.HostedButtons({
+    hostedButtonId: "NVCYWM4K27QHW",
+    onApprove: function(data) {
+
+      const sessions = Number(document.getElementById('sessions').value);
+      const amount = sessions === 1 ? 50 : (sessions === 2 ? 100 : 250);
+
+      const bookingData = new FormData();
+      bookingData.append("trainer_id", "<?php echo $trainer_id; ?>");
+      bookingData.append("date", selected.date);
+      bookingData.append("time", selected.slot);
+      bookingData.append("sessions", sessions);
+      bookingData.append("total_price", amount);
+
+      fetch("save_booking.php", {
+          method: "POST",
+          body: bookingData
+      })
+      .then(r => r.json())
+      .then(res => {
+          if (res.status === "success") {
+
+              document.getElementById('receipt').style.display = 'block';
+              document.getElementById('receiptId').textContent = res.booking_id;
+              document.getElementById('receiptDate').textContent = selected.date;
+              document.getElementById('receiptTime').textContent = selected.slot;
+              document.getElementById('receiptSessions').textContent = sessions;
+              document.getElementById('receiptPrice').textContent = '₱' + amount;
+
+              setTimeout(() => {
+                  window.location.href =
+                    "TrainerBooking.php?trainer_id=<?php echo $trainer_id; ?>&booking=success";
+              }, 2000);
+
+          } else {
+              alert("Booking failed: " + res.msg);
+          }
+      });
+    }
+}).render("#paypal-container-NVCYWM4K27QHW");
+</script>
 
 <script>
     const baseSlots = ['08:00','10:00','13:00','15:00','17:00','19:00'];
@@ -177,8 +227,10 @@ function renderSlots(){
     container.appendChild(btn);
   });
 }
+
 const selectedDateEl=document.getElementById('selectedDate'), selectedTimeEl=document.getElementById('selectedTime'), priceEl=document.getElementById('price'), sessionsSel=document.getElementById('sessions');
 function updateSummary(){ selectedDateEl.textContent=selected.date||'—'; selectedTimeEl.textContent=selected.slot||'—'; const sessions=Number(sessionsSel.value); let amount=sessions===1?50:(sessions===2?100:250); priceEl.textContent=`₱${amount}`; }
+
 buildCalendar(viewYear,viewMonth);
 renderSlots();
 
@@ -186,7 +238,6 @@ renderSlots();
 document.getElementById('prevMonth').onclick=()=>{ viewMonth--; if(viewMonth<0){ viewMonth=11; viewYear--; } buildCalendar(viewYear,viewMonth); renderSlots(); };
 document.getElementById('nextMonth').onclick=()=>{ viewMonth++; if(viewMonth>11){ viewMonth=0; viewYear++; } buildCalendar(viewYear,viewMonth); renderSlots(); };
 
-/* Proceed to Payment */
 document.getElementById('proceedBtn').onclick=()=>{
   if(!selected.date||!selected.slot){ alert('Please select a date and time slot.'); return; }
   const sessions=Number(sessionsSel.value);
@@ -200,48 +251,6 @@ document.getElementById('proceedBtn').onclick=()=>{
   document.getElementById('paySessions').textContent=booking.sessions;
   document.getElementById('payPrice').textContent=`₱${booking.amount}`;
 };
-
-/* Pay Now */
-document.getElementById('payBtn').onclick = () => {
-
-    const sessions = Number(document.getElementById('sessions').value);
-    const amount = sessions === 1 ? 50 : (sessions === 2 ? 100 : 250);
-
-    const data = new FormData();
-    data.append("trainer_id", "<?php echo $trainer_id; ?>");
-    data.append("date", selected.date);
-    data.append("time", selected.slot);
-    data.append("sessions", sessions);
-    data.append("total_price", amount);
-
-    fetch("save_booking.php", {
-        method: "POST",
-        body: data
-    })
-    .then(r => r.json())
-    .then(res => {
-        if (res.status === "success") {
-
-            document.getElementById('receipt').style.display = 'block';
-            document.getElementById('receiptId').textContent = res.booking_id;
-            document.getElementById('receiptDate').textContent = selected.date;
-            document.getElementById('receiptTime').textContent = selected.slot;
-            document.getElementById('receiptSessions').textContent = sessions;
-            document.getElementById('receiptPrice').textContent = '₱' + amount;
-
-            document.getElementById('payBtn').style.display = 'none';
-
-            // Redirect to Trainer page after 2 seconds
-            setTimeout(() => {
-                window.location.href = 
-                    "TrainerBooking.php?trainer_id=<?php echo $trainer_id; ?>&booking=success";
-            }, 2000);
-
-        } else {
-            alert("Booking failed: " + res.msg);
-        }
-    });
-};;
 </script>
 
 </body>
