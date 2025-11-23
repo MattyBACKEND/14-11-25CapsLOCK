@@ -85,6 +85,7 @@ $profile = $conn->query("SELECT * FROM trainer_profiles WHERE trainer_id = $trai
     <ul>
         <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Profile</a></li>
         <li><a href="TrainerClients.php"><i class='bx bxs-bar-chart-alt-2'></i> Clients</a></li>
+        <li><a href="feedback_domain.php"><i class='bx bxs-bar-chart-alt-2'></i> Feedbacks</a></li>
         <li><a href="Loginpage.php"><i class='bx bx-log-out'></i> Logout</a></li>
     </ul>
 </div>

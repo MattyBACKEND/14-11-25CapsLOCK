@@ -242,10 +242,16 @@ $result = $conn->query($query);
                                 }
                             ?>
                         </ul>
-                        <form action="TrainerBookingForm.php" method="GET">
-                            <input type="hidden" name="trainer_id" value="<?= htmlspecialchars($row['trainer_id']) ?>">
-                            <button type="submit">Book</button>
-                        </form>
+                        <form action="TrainerBookingForm.php" method="GET" style="display:inline-block; margin-right:10px;">
+    <input type="hidden" name="trainer_id" value="<?= htmlspecialchars($row['trainer_id']) ?>">
+    <button type="submit">Book</button>
+</form>
+
+<form action="feedback_trainer.php" method="GET" style="display:inline-block;">
+    <input type="hidden" name="trainer_id" value="<?= htmlspecialchars($row['trainer_id']) ?>">
+    <button type="submit" style="background-color: #ff6b6b;">Feedback</button>
+</form>
+
                     </div>
                 <?php endwhile; ?>
             </div>

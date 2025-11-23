@@ -7,6 +7,10 @@ if (!isset($_SESSION['trainer_id'])) {
     exit();
 }
 
+if (isset($_GET['booking'])) {
+    echo "<div class='alert alert-success'>Booking successful!</div>";
+}
+
 $trainer_id = $_SESSION['trainer_id'];
 
 $stmt = $conn->prepare("
@@ -49,7 +53,7 @@ $result = $stmt->get_result();
     background-color: #6c63ff;
     color: white;
 }
-.client-table tr:hover { background-color: #f9f9f9; }
+.client-table tr:hover { background-color: #6c63ff; }
 .header p { font-size: 22px; margin-left: 20px; }
 
 /* Toast Style */
@@ -84,6 +88,7 @@ $result = $stmt->get_result();
     <ul>
         <li><a href="Trainerdashboard.php"><i class='bx bxs-bar-chart-alt-2'></i> Profile</a></li>
         <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Clients</a></li>
+        <li><a href="feedback_domain.php"><i class='bx bxs-bar-chart-alt-2'></i> Feedbacks</a></li>
         <li><a href="Loginpage.php"><i class='bx bx-log-out'></i> Logout</a></li>
     </ul>
 </div>
@@ -97,35 +102,36 @@ $result = $stmt->get_result();
                 <th>Client Username</th>
                 <th>Sessions Booked</th>
                 <th>Total Paid</th>
-                <th>Booking Date</th>
+                <th>Session Date & Time</th>
             </tr>
         </thead>
-        <tbody>
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-            <tr id="row-<?= $row['id'] ?>">
-                <td><?= htmlspecialchars($row['fullname']) ?></td>
-                <td><?= $row['session_count'] ?></td>
-                <td>₱<?= $row['total_price'] ?></td>
-                <td>
-                    <?= date('Y-m-d H:i', strtotime($row['booked_at'])) ?>
+<tbody>
+<?php if ($result->num_rows > 0): ?>
+    <?php while ($row = $result->fetch_assoc()): ?>
+    <tr id="row-<?= $row['id'] ?>">
+        <td><?= htmlspecialchars($row['fullname']) ?></td>
+        <td><?= $row['session_count'] ?></td>
+        <td>₱<?= $row['total_price'] ?></td>
+        <td>
+            <?= htmlspecialchars($row['date']) ?> <?= htmlspecialchars($row['time']) ?>
+            
+            <a href="update_booking.php?id=<?= $row['id'] ?>" 
+               style="padding:6px 10px; background:#4CAF50; color:white; border-radius:5px; text-decoration:none; margin-left:10px; font-size:13px;">
+               Update
+            </a>
 
-                    <a href="update_booking.php?id=<?= $row['id'] ?>" 
-                       style="padding:6px 10px; background:#4CAF50; color:white; border-radius:5px; text-decoration:none; margin-left:10px; font-size:13px;">
-                       Update
-                    </a>
+            <button onclick="cancelBooking(<?= $row['id'] ?>)" 
+                    style="padding:6px 10px; background:#e74c3c; color:white; border-radius:5px; border:none; margin-left:5px; font-size:13px; cursor:pointer;">
+                Cancel
+            </button>
+        </td>
+    </tr>
+    <?php endwhile; ?>
+<?php else: ?>
+    <tr><td colspan="4">No bookings yet.</td></tr>
+<?php endif; ?>
+</tbody>
 
-                    <button onclick="cancelBooking(<?= $row['id'] ?>)" 
-                            style="padding:6px 10px; background:#e74c3c; color:white; border-radius:5px; border:none; margin-left:5px; font-size:13px; cursor:pointer;">
-                        Cancel
-                    </button>
-                </td>
-            </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr><td colspan="4">No bookings yet.</td></tr>
-        <?php endif; ?>
-        </tbody>
     </table>
 </div>
 
