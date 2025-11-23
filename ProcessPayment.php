@@ -26,18 +26,18 @@ $stmt->close();
 
 // Define membership options
 $membershipOptions = [
-    "student_1year"       => ["label" => "Student - 1 Year", "price" => 499],
-    "student_lifetime"    => ["label" => "Student - Lifetime", "price" => 1999],
-    "student_1month"      => ["label" => "Student - 1 Month", "price" => 1099],
-    "student_3plus1"      => ["label" => "Student - 3 + 1 Month", "price" => 3799],
-    "student_6months"     => ["label" => "Student - 6 Months", "price" => 5499],
-    "student_12months"    => ["label" => "Student - 12 Months", "price" => 9999],
-    "nonstudent_1year"    => ["label" => "Non-Student - 1 Year", "price" => 799],
-    "nonstudent_lifetime" => ["label" => "Non-Student - Lifetime", "price" => 3999],
-    "nonstudent_1month"   => ["label" => "Non-Student - 1 Month", "price" => 1399],
-    "nonstudent_3plus1"   => ["label" => "Non-Student - 3 + 1 Month", "price" => 4899],
-    "nonstudent_6months"  => ["label" => "Non-Student - 6 Months", "price" => 6999],
-    "nonstudent_12months" => ["label" => "Non-Student - 12 Months", "price" => 12999],
+    "student_1year"       => ["label" => "Student - 1 Year", "price" => 1],
+    "student_lifetime"    => ["label" => "Student - Lifetime", "price" => 1],
+    "student_1month"      => ["label" => "Student - 1 Month", "price" => 1],
+    "student_3plus1"      => ["label" => "Student - 3 + 1 Month", "price" => 1],
+    "student_6months"     => ["label" => "Student - 6 Months", "price" => 1],
+    "student_12months"    => ["label" => "Student - 12 Months", "price" => 1],
+    "nonstudent_1year"    => ["label" => "Non-Student - 1 Year", "price" => 1],
+    "nonstudent_lifetime" => ["label" => "Non-Student - Lifetime", "price" => 1],
+    "nonstudent_1month"   => ["label" => "Non-Student - 1 Month", "price" => 1],
+    "nonstudent_3plus1"   => ["label" => "Non-Student - 3 + 1 Month", "price" => 1],
+    "nonstudent_6months"  => ["label" => "Non-Student - 6 Months", "price" => 1],
+    "nonstudent_12months" => ["label" => "Non-Student - 12 Months", "price" => 1],
 ];
 
 // Process membership selection

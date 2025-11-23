@@ -94,7 +94,7 @@
                         <input type="radio" id="student_1year" name="membership" value="student_1year" required>
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-primary-blue">Best Value</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱499</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 1 Year</p>
                             <p class="text-sm text-gray-500 min-h-10">Perfect for academic cycles. Full access for one whole year.</p>
                         </div>
@@ -105,7 +105,7 @@
                         <input type="radio" id="student_lifetime" name="membership" value="student_lifetime">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-yellow-600">Premium Choice</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1,999</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">Lifetime</p>
                             <p class="text-sm text-gray-500 min-h-10">Pay once, enjoy forever.</p>
                         </div>
@@ -116,7 +116,7 @@
                         <input type="radio" id="student_1month" name="membership" value="student_1month">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-gray-400">Monthly</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1,099</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 1 Month</p>
                             <p class="text-sm text-gray-500 min-h-10">Short-term access for focused projects.</p>
                         </div>
@@ -127,7 +127,7 @@
                         <input type="radio" id="student_3plus1" name="membership" value="student_3plus1">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-green-600">Bonus Month!</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱3,799</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 4 Months</p>
                             <p class="text-sm text-gray-500 min-h-10">Get 3 months + 1 month free.</p>
                         </div>
@@ -138,7 +138,7 @@
                         <input type="radio" id="student_6months" name="membership" value="student_6months">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-purple-600">Semester Term</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱5,499</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 6 Months</p>
                             <p class="text-sm text-gray-500 min-h-10">Ideal for semester-long commitments.</p>
                         </div>
@@ -149,7 +149,7 @@
                         <input type="radio" id="student_12months" name="membership" value="student_12months">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-primary-blue">Annual Savings</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱9,999</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 12 Months</p>
                             <p class="text-sm text-gray-500 min-h-10">Locked-in yearly rate.</p>
                         </div>
@@ -169,7 +169,7 @@
                         <input type="radio" id="nonstudent_1year" name="membership" value="nonstudent_1year">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-primary-blue">Annual Access</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱799</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 1 Year</p>
                             <p class="text-sm text-gray-500 min-h-10">Yearly plan for professionals.</p>
                         </div>
@@ -179,7 +179,7 @@
                         <input type="radio" id="nonstudent_lifetime" name="membership" value="nonstudent_lifetime">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-yellow-600">The Ultimate Plan</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱3,999</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">Lifetime</p>
                             <p class="text-sm text-gray-500 min-h-10">Unlimited, permanent access.</p>
                         </div>
@@ -189,7 +189,7 @@
                         <input type="radio" id="nonstudent_1month" name="membership" value="nonstudent_1month">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-gray-400">Monthly</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1,399</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 1 Month</p>
                             <p class="text-sm text-gray-500 min-h-10">Cancel anytime.</p>
                         </div>
@@ -199,7 +199,7 @@
                         <input type="radio" id="nonstudent_3plus1" name="membership" value="nonstudent_3plus1">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-green-600">Bonus Month!</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱4,899</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 4 Months</p>
                             <p class="text-sm text-gray-500 min-h-10">3 months + 1 free.</p>
                         </div>
@@ -209,7 +209,7 @@
                         <input type="radio" id="nonstudent_6months" name="membership" value="nonstudent_6months">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-purple-600">Half-Year Plan</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱6,999</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 6 Months</p>
                             <p class="text-sm text-gray-500 min-h-10">Long-term commitment.</p>
                         </div>
@@ -219,7 +219,7 @@
                         <input type="radio" id="nonstudent_12months" name="membership" value="nonstudent_12months">
                         <div class="text-center">
                             <p class="text-sm font-medium uppercase text-primary-blue">Max Savings</p>
-                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱12,999</h3>
+                            <h3 class="text-4xl font-extrabold text-gray-900 my-2">₱1</h3>
                             <p class="text-xl font-semibold text-gray-600 mb-4">/ 12 Months</p>
                             <p class="text-sm text-gray-500 min-h-10">Most cost-effective annual package.</p>
                         </div>
@@ -236,6 +236,7 @@
 
         </form>
     </div>
+    <input type="hidden" name="membership_selected" id="hiddenMembership">
 
     <!-- Card Selection Script (UPDATED WITH ANIMATION + SHOW/HIDE PAYPAL) -->
     <script>
@@ -285,6 +286,7 @@
 paypal.HostedButtons({
     hostedButtonId: "47WF2C9PU6P2C",
     onApprove: function(data, actions) {
+
         // Get selected membership
         const selected = document.querySelector('input[name="membership"]:checked');
         if (!selected) {
@@ -292,14 +294,15 @@ paypal.HostedButtons({
             return;
         }
 
-        // Put the selected value into the hidden form
+        // Place selected value in hidden input
         document.getElementById('hiddenMembership').value = selected.value;
 
-        // Submit the form to ProcessPayment.php
-        document.getElementById('paymentForm').submit();
+        // Submit correct form
+        document.getElementById('membershipForm').submit();
     }
 }).render("#paypal-container-47WF2C9PU6P2C");
 </script>
+
 
     </script>
 

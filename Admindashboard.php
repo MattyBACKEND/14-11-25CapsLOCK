@@ -112,22 +112,24 @@ $users = $conn->query("SELECT * FROM users");
       <table class="table table-bordered table-striped" id="users-table">
         <thead>
           <tr>
-            <th>ID</th><th>Full Name</th><th>Email</th><th>Password</th><th>Actions</th>
+            <th>ID</th><th>Full Name</th><th>Email</th><th>Password</th><th>Contanct Number</th><th>Actions</th>
           </tr>
         </thead>
         <tbody id="users-table-body">
          <?php while ($row = $users->fetch_assoc()): ?>
-  <tr>
-    <td><?= $row['id'] ?></td>
-    <td><?= $row['fullname'] ?></td>
-    <td><?= $row['email'] ?></td>
-    <td>********</td>  <!-- Password hidden -->
-    <td>
-      <a href="?edit=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
-      <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
-         onclick="return confirm('Delete this user?')">Delete</a>
-    </td>
-  </tr>
+<tr>
+  <td><?= $row['id'] ?></td>
+  <td><?= $row['fullname'] ?></td>
+  <td><?= $row['email'] ?></td>
+  <td>********</td>  <!-- Password hidden -->
+  <td><?= $row['cp_no'] ?></td> <!-- NEW COLUMN -->
+  <td>
+    <a href="?edit=<?= $row['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+    <a href="?delete=<?= $row['id'] ?>" class="btn btn-danger btn-sm"
+       onclick="return confirm('Delete this user?')">Delete</a>
+  </td>
+</tr>
+
 <?php endwhile; ?>
         </tbody>
       </table>
@@ -155,6 +157,11 @@ $users = $conn->query("SELECT * FROM users");
           <label class="form-label">Email</label>
           <input type="email" name="email" class="form-control" value="<?= $edit_user['email'] ?? '' ?>" required>
         </div>
+        <div class="mb-3">
+        <label class="form-label">Contact Number</label>
+          <input type="text" name="cp_no" class="form-control" value="<?= $edit_user['cp_no'] ?? '' ?>" required>
+        </div>
+
         <div class="mb-3">
           <label class="form-label"><?= $edit_user ? 'New Password (optional)' : 'Password' ?></label>
           <input type="text" name="password" class="form-control" <?= $edit_user ? '' : 'required' ?>>

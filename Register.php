@@ -17,11 +17,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
     $age = intval($_POST['age']);
     $gender = $_POST['gender'];
     $focus = $_POST['focus'];
+    $cp_no = trim($_POST['cp_no']);
     $goal = $_POST['goal'];
     $activity = $_POST['activity'];
     $training_days = isset($_POST['training_days']) ? implode(", ", $_POST['training_days']) : '';
-    $weight = floatval($_POST['weight']);
-    $height = floatval($_POST['height']);
+    $weight_kg = floatval($_POST['weight']);
+    $height_cm = floatval($_POST['height']);
 
     // Compute BMI (height in meters)
     $bmi = ($height > 0) ? round($weight / (($height / 100) ** 2), 2) : 0;
@@ -44,26 +45,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
     }
 
     // Insert new user
-    $stmt = $conn->prepare("
-        INSERT INTO users (
-            fullname, email, password,
-            age, gender, focus, goal,
-            activity, training_days, bmi
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ");
-    $stmt->bind_param(
-        "sssisssssd",
-        $fullname,
-        $email,
-        $hashedPassword,
-        $age,
-        $gender,
-        $focus,
-        $goal,
-        $activity,
-        $training_days,
-        $bmi
-    );
+  $stmt = $conn->prepare("
+    INSERT INTO users (
+        fullname, email, password,
+        age, gender, focus, goal,
+        activity, training_days, 
+        weight_kg, height_cm, bmi, cp_no
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+");
+
+$stmt->bind_param(
+    "sssisssssddds",  // 13 types: s=string, i=int, d=double
+    $fullname,
+    $email,
+    $hashedPassword,
+    $age,
+    $gender,
+    $focus,
+    $goal,
+    $activity,
+    $training_days,
+    $weight_kg,  // double
+    $height_cm,  // double
+    $bmi,        // double
+    $cp_no       // string
+);
+
+
 
     if ($stmt->execute()) {
         // ✅ Set session for logged-in client
@@ -90,7 +98,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,6 +120,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["register"])) {
       <div class="input-box">
         <input type="text" name="fullname" id="fullname" placeholder="Full Name" required />
         <i class='bx bxs-user'></i>
+      </div>
+
+      <div class="input-box">
+     <input type="text" name="cp_no" id="cp_no" placeholder="Contact Number" required />
+        <i class='bx bxs-phone'></i>
       </div>
 
       <div class="input-box">
