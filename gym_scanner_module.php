@@ -150,7 +150,7 @@
                         <i class='bx bx-chevron-down toggle-icon'></i>
                     </a>
                     <ul class="submenu">
-                        <li><a href="#" class="active-link">
+                        <li><a href="CalorieScanner.php" class="active-link">
                             <i class='bx bx-scan'></i> 
                             <span>Calorie Scanner</span>
                         </a></li>
@@ -209,7 +209,7 @@
 
     <script>
         // --- CONFIGURATION ONLY ONE LINK CAN WORK BUT YOU CAN MAKE 20 EQUIPMENTS IN ONE LINK CUZ ITS CLOUD---
-        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/IyyvLoaFo/"; 
+        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/WuwDwx2SF/"; 
         const MAX_PREDICTIONS = 3; 
         const MIN_CONFIDENCE_THRESHOLD = 0.85; // 85% confidence required for AR activation
 
