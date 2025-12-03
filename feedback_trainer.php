@@ -1,9 +1,19 @@
+<?php
+// trainer_id passed from booking page:
+// feedback_form.php?trainer_id=7
+
+if (!isset($_GET['trainer_id'])) {
+    die("Trainer ID missing.");
+}
+
+$trainer_id = intval($_GET['trainer_id']);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trainer Feedback</title>
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -80,9 +90,10 @@ button{
 </select>
 
 <label>Comments</label>
-<textarea id="comments" placeholder="Write comments here..."></textarea>
+<textarea id="comments"></textarea>
 
 <button id="submitFeedback">Submit Feedback</button>
+
 <div class="success" id="successMsg">Feedback submitted successfully!</div>
 </div>
 
@@ -91,26 +102,30 @@ document.getElementById('submitFeedback').onclick = function() {
     const rating = document.getElementById('rating').value;
     const comments = document.getElementById('comments').value.trim();
 
-    if (!rating || !comments) {
-        alert("Please provide both rating and comments.");
+    if (!comments) {
+        alert("Please enter comments.");
         return;
     }
 
-    fetch('save_feedback.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating: rating, comment: comments })
+    fetch("save_feedback.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            trainer_id: <?= $trainer_id ?>,
+            rating: rating,
+            comment: comments
+        })
     })
     .then(res => res.json())
     .then(response => {
-        if(response.success){
+        if (response.success) {
             document.getElementById('successMsg').style.display = "block";
             document.getElementById('comments').value = "";
         } else {
-            alert("Error: " + (response.error || "Unable to save feedback"));
+            alert(response.error);
         }
     })
-    .catch(err => console.error(err));
+    .catch(err => alert("Network error"));
 };
 </script>
 

@@ -31,7 +31,7 @@ function calculateBMR($weight_kg, $height_cm, $age, $gender) {
         return 447.593 + (9.247 * $weight_kg) + (3.098 * $height_cm) - (4.330 * $age);
     }
 }
-
+    
 function calculateTDEE($bmr, $activity_level) {
     if ($bmr === 0) return 0;
     
@@ -72,6 +72,16 @@ function getMacroSplit($goal) {
 
     return $splits[$goal] ?? $splits['Default'];
 }
+
+function getBMIStatus($bmi) {
+    if ($bmi <= 0) return "Not Available";
+
+    if ($bmi < 18.5) return "Underweight";
+    if ($bmi < 24.9) return "Normal";
+    if ($bmi < 29.9) return "Overweight";
+    return "Obese";
+}
+
 
 function calculateMacroGrams($calorie_goal, $macro_split) {
     $protein_percent = $macro_split['Protein'] / 100;
@@ -243,6 +253,7 @@ $stmt->bind_param("s", $emailToFetch);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result && $result->num_rows > 0 ? $result->fetch_assoc() : null;
+$bmi_status = getBMIStatus($user['bmi']);
 $stmt->close();
 
 $daily_calorie_goal = 0;
@@ -334,7 +345,9 @@ $view_details = [
     ['label' => 'Activity Level', 'value' => $user['activity'], 'icon' => 'bx-trending-up', 'color' => 'red'],
     ['label' => 'Training Days', 'value' => $user['training_days'] . ' / week', 'icon' => 'bx-dumbbell', 'color' => 'orange'],
     ['label' => 'BMI', 'value' => number_format($user['bmi'], 2), 'icon' => 'bx-body', 'color' => 'yellow'],
+    ['label' => 'BMI Status','value' => $bmi_status,'icon' => 'bx-health', 'color' => 'teal'],
 ];
+
 
 // --- Dietary Plan Suggestions based on Goal ---
 $diet_plan_suggestions = [

@@ -150,7 +150,7 @@
                         <i class='bx bx-chevron-down toggle-icon'></i>
                     </a>
                     <ul class="submenu">
-                        <li><a href="CalorieScanner.php" class="active-link">
+                        <li><a href="#" class="active-link">
                             <i class='bx bx-scan'></i> 
                             <span>Calorie Scanner</span>
                         </a></li>
@@ -215,16 +215,14 @@
 
         // --- EQUIPMENT AND EXERCISE MAPPING ---
         const EXERCISE_MAPPING = {
-            "red-dumbell-2kg": {
+            "red-dumbell": {
                 displayName: "Red Dumbbell 2kg",
-                recommendedExercise: "Biceps Curl, Lateral Raise, Triceps Kickback, Front Raise, Overhead Extension, Wrist Curl, Dumbbell Punch, Shrugs, Bent-Over Row (Single Arm), Fly (Supine)", 
-
-            instructions: [
-            "Maintain a stable core and neutral spine for all standing movements.",
-            "Use smooth, controlled movements; avoid swinging the weight (momentum).",
-            "Focus on high repetitions (15-30 reps) due to the light 2kg weight.",
-            "If performing exercises that require two dumbbells, use both of the 2kg pair.",
-
+                recommendedExercise: "Biceps Curl",
+                instructions: [
+                    "Stand tall, chest up, and shoulders back.",
+                    "Keep your elbows close to your torso.",
+                    "Curl the weights while contracting your biceps.",
+                    "Focus on a controlled, smooth descent to complete the repetition.",
                 ]
             },
             "yoga-mat": {

@@ -4,12 +4,11 @@ include 'connection.php';
 
 if (!isset($_SESSION['trainer_id'])) {
     header("Location: Loginpage.php");
-    exit();
+    exit;
 }
 
 $trainer_id = $_SESSION['trainer_id'];
 
-// Fetch feedbacks for this trainer
 $stmt = $conn->prepare("
     SELECT rating, comment, created_at
     FROM trainer_feedback
@@ -20,13 +19,14 @@ $stmt->bind_param("i", $trainer_id);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Trainer Feedbacks</title>
+<link rel="stylesheet" href="Trainerdbstyle.css">
 <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<title>Trainer Feedbacks</title>
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -82,31 +82,31 @@ body {
     <h2>Trainer Dashboard</h2>
     <ul>
         <li><a href="Trainerdashboard.php"><i class='bx bxs-bar-chart-alt-2'></i> Profile</a></li>
-        <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Clients</a></li>
+        <li><a href="TrainerClients.php"><i class='bx bxs-bar-chart-alt-2'></i> Clients</a></li>
         <li><a href="feedback_domain.php"><i class='bx bxs-bar-chart-alt-2'></i> Feedbacks</a></li>
         <li><a href="Loginpage.php"><i class='bx bx-log-out'></i> Logout</a></li>
     </ul>
 </div>
 
 <div class="main-content">
-    <div class="header"><p>Feedbacks</p></div>
+    <h2>Your Feedback</h2>
 
     <table class="feedback-table">
         <thead>
             <tr>
                 <th>Rating</th>
                 <th>Comment</th>
-                <th>Date & Time</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
         <?php if ($result->num_rows > 0): ?>
             <?php while ($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?= str_repeat("⭐", intval($row['rating'])) ?></td>
-                <td><?= htmlspecialchars($row['comment']) ?></td>
-                <td><?= htmlspecialchars($row['created_at']) ?></td>
-            </tr>
+                <tr>
+                    <td><?= str_repeat("⭐", $row['rating']) ?></td>
+                    <td><?= htmlspecialchars($row['comment']) ?></td>
+                    <td><?= $row['created_at'] ?></td>
+                </tr>
             <?php endwhile; ?>
         <?php else: ?>
             <tr><td colspan="3">No feedback yet.</td></tr>

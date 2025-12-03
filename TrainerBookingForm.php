@@ -195,7 +195,6 @@ paypal.HostedButtons({
 }).render("#paypal-container-NVCYWM4K27QHW");
 </script>
 
-
 <script>
 const baseSlots = ['08:00','10:00','13:00','15:00','17:00','19:00'];
 const slotCapacity = 1;
@@ -224,45 +223,69 @@ function countBookingsForSlot(ymd,time){
 }
 
 // Build calendar
-function buildCalendar(year,month){
-    calendarEl.innerHTML='';
-    const dayNames=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-    dayNames.forEach(dn=>{
-        const el=document.createElement('div'); 
-        el.className='dayName'; 
-        el.textContent=dn; 
-        calendarEl.appendChild(el); 
+function buildCalendar(year, month) {
+    calendarEl.innerHTML = '';
+    const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+    dayNames.forEach(dn => {
+        const el = document.createElement('div');
+        el.className = 'dayName';
+        el.textContent = dn;
+        calendarEl.appendChild(el);
     });
 
-    document.getElementById('monthYear').textContent = new Intl.DateTimeFormat('en', {month:'long'}).format(new Date(year,month)) + ' ' + year;
+    document.getElementById('monthYear').textContent =
+        new Intl.DateTimeFormat('en', {month:'long'}).format(new Date(year,month)) + ' ' + year;
 
     const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month+1,0).getDate();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
 
-    for(let i=0;i<firstDay;i++){ calendarEl.appendChild(document.createElement('div')); }
+    // Fill empty spaces
+    for (let i = 0; i < firstDay; i++) {
+        calendarEl.appendChild(document.createElement('div'));
+    }
 
-    for(let d=1; d<=daysInMonth; d++){
-        const dayEl=document.createElement('div');
-        dayEl.className='day'; 
-        dayEl.textContent=d;
-        const ymd=formatDateYMD(year,month,d);
+    for (let d = 1; d <= daysInMonth; d++) {
 
-        if(Array.from(baseSlots).every(s=>countBookingsForSlot(ymd,s)>=slotCapacity)) dayEl.classList.add('disabled');
-        else dayEl.onclick = () => { 
-            selected.date = ymd;          
-            selected.slot = null;          
-            renderSlots();                 
-            updateSummary();               
-            document.querySelectorAll('.day').forEach(n=>n.classList.remove('selected')); 
-            dayEl.classList.add('selected'); 
-        };
+        const dayEl = document.createElement('div');
+        dayEl.className = 'day';
+        dayEl.textContent = d;
 
-        if(year===now.getFullYear() && month===now.getMonth() && d===now.getDate()) 
-            dayEl.style.outline='2px solid rgba(90,63,243,.12)';
+        const ymd = formatDateYMD(year, month, d);
+        const thisDate = new Date(year, month, d);
+
+        const allSlotsBooked =
+            Array.from(baseSlots).every(s => countBookingsForSlot(ymd, s) >= slotCapacity);
+
+        const isPast = thisDate < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+        // Disable conditions
+        if (isPast || allSlotsBooked) {
+            dayEl.classList.add('disabled');
+        } else {
+            // Click handler only if date is valid
+            dayEl.onclick = () => {
+                selected.date = ymd;
+                selected.slot = null;
+                renderSlots();
+                updateSummary();
+                document.querySelectorAll('.day').forEach(n => n.classList.remove('selected'));
+                dayEl.classList.add('selected');
+            };
+        }
+
+        // Highlight today
+        if (year === today.getFullYear() &&
+            month === today.getMonth() &&
+            d === today.getDate()) {
+                dayEl.style.outline = '2px solid rgba(90,63,243,.12)';
+        }
 
         calendarEl.appendChild(dayEl);
     }
 }
+
 
 // Render available slots
 function renderSlots(){

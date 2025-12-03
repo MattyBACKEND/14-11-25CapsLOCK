@@ -260,6 +260,45 @@ $result = $conn->query($query);
     </main>
 
     <script>
+
+
+// Toggle notifications dropdown
+document.getElementById('notifBtn').addEventListener('click', () => {
+    const dropdown = document.getElementById('notifDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+// Function to update notification bell and list
+function updateNotifications() {
+    fetch('fetch_notifications.php')
+    .then(res => res.json())
+    .then(data => {
+        if(!data.success) return;
+
+        const notifCount = document.getElementById('notifCount');
+        const notifList = document.getElementById('notifList');
+
+        notifCount.style.display = data.count > 0 ? 'inline-block' : 'none';
+        notifCount.textContent = data.count;
+
+        notifList.innerHTML = '';
+        if(data.notifications.length === 0){
+            notifList.innerHTML = '<div style="padding:8px; border-bottom:1px solid #eee;">No new notifications</div>';
+        } else {
+            data.notifications.forEach(msg => {
+                notifList.innerHTML += `<div style="padding:8px; border-bottom:1px solid #eee;">${msg}</div>`;
+            });
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+// Initial fetch
+updateNotifications();
+
+// Optional: refresh every 15 seconds
+setInterval(updateNotifications, 10000);
+
         document.addEventListener('DOMContentLoaded', () => {
             // ... (Your toggleEditMode function logic remains unchanged)
             

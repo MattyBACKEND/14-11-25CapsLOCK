@@ -91,9 +91,43 @@ $profile = $conn->query("SELECT * FROM trainer_profiles WHERE trainer_id = $trai
 </div>
 
 <div class="main-content">
-    <div class="header">
-        <p>Welcome <?= htmlspecialchars($_SESSION['trainer_name']) ?> ! </p>
+    <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+    <p style="font-weight: bold">Welcome <?= htmlspecialchars($_SESSION['trainer_name']) ?> ! </p>
+
+    <!-- Notification Bell -->
+    <div style="position: relative;">
+        <button id="notifBtn" style="background:none; border:none; cursor:pointer; font-size:20px; position: relative;">
+            🔔
+            <span id="notifCount" style="
+                display:none;
+                position:absolute;
+                top:-5px;
+                right:-5px;
+                background:red;
+                color:white;
+                border-radius:50%;
+                padding:2px 6px;
+                font-size:12px;
+            ">0</span>
+        </button>
+
+        <div id="notifDropdown" style="
+            display:none;
+            position:absolute;
+            right:0;
+            margin-top:5px;
+            background:white;
+            border:1px solid #ccc;
+            width:250px;
+            max-height:300px;
+            overflow-y:auto;
+            box-shadow:0 4px 12px rgba(0,0,0,0.15);
+            z-index:100;
+        ">
+            <div id="notifList"></div>
+        </div>
     </div>
+</div>
 
     <?php if (!isset($_GET['edit']) && $profile): ?>
         <div class="trainer-profile-display">
@@ -169,5 +203,46 @@ $profile = $conn->query("SELECT * FROM trainer_profiles WHERE trainer_id = $trai
         </form>
     <?php endif; ?>
 </div>
+
+<script>
+// Toggle notifications dropdown
+document.getElementById('notifBtn').addEventListener('click', () => {
+    const dropdown = document.getElementById('notifDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+// Function to update notification bell and list
+function updateNotifications() {
+    fetch('fetch_notifications.php')
+    .then(res => res.json())
+    .then(data => {
+        if(!data.success) return;
+
+        const notifCount = document.getElementById('notifCount');
+        const notifList = document.getElementById('notifList');
+
+        notifCount.style.display = data.count > 0 ? 'inline-block' : 'none';
+        notifCount.textContent = data.count;
+
+        notifList.innerHTML = '';
+        if(data.notifications.length === 0){
+            notifList.innerHTML = '<div style="padding:8px; border-bottom:1px solid #eee;">No new notifications</div>';
+        } else {
+            data.notifications.forEach(msg => {
+                notifList.innerHTML += `<div style="padding:8px; border-bottom:1px solid #eee;">${msg}</div>`;
+            });
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+// Initial fetch
+updateNotifications();
+
+// Optional: refresh every 15 seconds
+setInterval(updateNotifications, 15000);
+</script>
+
+
 </body>
 </html>
