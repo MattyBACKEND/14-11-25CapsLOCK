@@ -3,6 +3,44 @@
 session_start();
 include 'connection.php';
 
+if (isset($_SESSION['email'])) {
+    $emailToFetch = $_SESSION['email'];
+    
+    // Get user ID
+    $user_sql = "SELECT id FROM users WHERE email = ?";
+    $user_stmt = $conn->prepare($user_sql);
+    $user_stmt->bind_param("s", $emailToFetch);
+    $user_stmt->execute();
+    $user_result = $user_stmt->get_result();
+    $user_data = $user_result->fetch_assoc();
+    $user_stmt->close();
+    
+    if ($user_data) {
+        $user_id = $user_data['id'];
+        
+        // Check if we've already processed today's reset
+        if (!isset($_SESSION['last_reset_check']) || $_SESSION['last_reset_check'] != date('Y-m-d')) {
+            // Get the date of the most recent log
+            $last_log_sql = "SELECT MAX(log_date) as last_log_date FROM dietary_logs WHERE user_id = ?";
+            $last_log_stmt = $conn->prepare($last_log_sql);
+            $last_log_stmt->bind_param("i", $user_id);
+            $last_log_stmt->execute();
+            $last_log_result = $last_log_stmt->get_result()->fetch_assoc();
+            $last_log_stmt->close();
+            
+            $last_log_date = $last_log_result['last_log_date'] ?? null;
+            $today = date('Y-m-d');
+            
+            // If last log is from a previous day, auto-reset is not needed because
+            // the system already filters by today's date
+            // But we can add a cleanup for old temp data if needed
+            
+            // Mark that we've checked today
+            $_SESSION['last_reset_check'] = $today;
+        }
+    }
+}
+
 // Check for and display session messages before anything else
 $message = ''; 
 if (isset($_SESSION['success_message'])) {
@@ -146,7 +184,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_details'])) {
 
 // --- 1.5. HANDLE FORM SUBMISSION (LOG MEAL) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['log_calories'])) {
+    // Check if user has exceeded calorie intake before processing
     $user_id_log = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
+    
+    // First, fetch today's total calories to check if user has exceeded
+    $today = date("Y-m-d");
+    $check_sql = "SELECT SUM(calories) AS total_calories FROM dietary_logs WHERE user_id = ? AND log_date = ?";
+    include 'connection.php';
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("is", $user_id_log, $today);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result()->fetch_assoc();
+    $current_total_calories = $check_result['total_calories'] ?? 0;
+    $check_stmt->close();
+    
+    // Fetch user's daily calorie goal
+    $goal_sql = "SELECT weight_kg, height_cm, age, gender, activity, goal FROM users WHERE id = ?";
+    $goal_stmt = $conn->prepare($goal_sql);
+    $goal_stmt->bind_param("i", $user_id_log);
+    $goal_stmt->execute();
+    $goal_result = $goal_stmt->get_result()->fetch_assoc();
+    $goal_stmt->close();
+    
+    // Calculate daily calorie goal
+    if ($goal_result && $goal_result['weight_kg'] > 0 && $goal_result['height_cm'] > 0 && $goal_result['age'] > 0) {
+        $bmr = calculateBMR($goal_result['weight_kg'], $goal_result['height_cm'], $goal_result['age'], $goal_result['gender']);
+        $tdee = calculateTDEE($bmr, $goal_result['activity']);
+        $daily_calorie_goal = calculateDailyCalorieGoal($tdee, $goal_result['goal']);
+        
+        // Check if user has already exceeded their daily calorie goal
+        if ($current_total_calories >= $daily_calorie_goal) {
+            $_SESSION['error_message'] = 'Error: You have already exceeded your daily calorie intake. Cannot log more meals today.';
+            header("Location: Membership.php");
+            exit();
+        }
+    }
+    
+    // If not exceeded, continue with normal logging process
     $meal_type = filter_input(INPUT_POST, 'meal_type', FILTER_SANITIZE_STRING);
     $calories_intake = filter_input(INPUT_POST, 'calories_intake', FILTER_VALIDATE_FLOAT);
     $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
@@ -182,7 +256,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['log_calories'])) {
         }
         
         // Prepare INSERT query
-        include 'connection.php'; 
         $insert_sql = "INSERT INTO dietary_logs (user_id, log_date, meal_type, description, calories, image_path) VALUES (?, ?, ?, ?, ?, ?)";
         $insert_stmt = $conn->prepare($insert_sql);
         
@@ -264,6 +337,10 @@ $user_id = $user['id'] ?? null;
 $macro_grams = ['ProteinGrams' => 0, 'CarbGrams' => 0, 'FatGrams' => 0];
 $macro_split = ['Protein' => 0, 'Carbs' => 0, 'Fat' => 0];
 
+
+// Track if user has exceeded calorie intake
+$has_exceeded_calories = false;
+
 if ($user && $user_id) {
     // 2.1 Calculate Calorie Goal
     $weight_kg = $user['weight_kg'];
@@ -309,10 +386,15 @@ if ($user && $user_id) {
     
     // 2.4 Calculate Progress Percentage
     if ($daily_calorie_goal > 0) {
-        $calorie_percent = min(100, round(($total_today_calories / $daily_calorie_goal) * 100));
+        $calorie_percent = round(($total_today_calories / $daily_calorie_goal) * 100);
     }
     
-    // --- 2.5 Fetch Recent Dietary Logs ---
+    // 2.5 Check if user has exceeded calorie intake
+    if ($daily_calorie_goal > 0 && $total_today_calories > $daily_calorie_goal) {
+        $has_exceeded_calories = true;
+    }
+    
+    // --- 2.6 Fetch Recent Dietary Logs ---
     $logs_sql = "SELECT log_date, meal_type, description, calories, image_path FROM dietary_logs WHERE user_id = ? ORDER BY log_id DESC LIMIT 10";
     
     if (!isset($conn) || !$conn->ping()) {
@@ -422,6 +504,11 @@ $current_plan = $diet_plan_suggestions[$plan_key];
         /* Modal transitions */
         .transition-opacity { transition: opacity 0.3s ease-in-out; }
         .transition-transform { transition: transform 0.3s ease-in-out; }
+        /* Disabled form styling */
+        .disabled-form {
+            opacity: 0.6;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -637,15 +724,40 @@ $current_plan = $diet_plan_suggestions[$plan_key];
                     </div>
 
                     <?php 
-                        $progressBarColor = $calorie_percent >= 100 ? 'bg-green-500' : 'bg-indigo-500';
-                        $messageClass = $calorie_percent >= 100 ? 'text-green-600 font-bold' : 'text-gray-500';
-                        $messageText = $calorie_percent >= 100 ? 'Goal Reached! 🎉' : 'Keep going...';
+                    // Calculate calories remaining
+                    $calories_remaining = $daily_calorie_goal - $total_today_calories;
+                    
+                    // Determine progress bar color and message based on conditions
+                    if ($total_today_calories > $daily_calorie_goal) {
+                        // Exceeded goal - RED
+                        $progressBarColor = 'bg-red-500';
+                        $messageClass = 'text-red-600 font-bold';
+                        $messageText = '⚠️ You have exceeded your daily calorie intake!';
+                    } elseif ($calories_remaining <= 300 && $calories_remaining > 0) {
+                        // Within 300 calories of goal - ORANGE
+                        $progressBarColor = 'bg-orange-500';
+                        $messageClass = 'text-orange-600 font-bold';
+                        $messageText = '⚠️ You are close to your daily calorie goal (' . number_format($calories_remaining) . ' calories remaining)';
+                    } elseif ($calories_remaining <= 0) {
+                        // At or above goal (but not exceeded - this shouldn't happen due to first condition, but as fallback)
+                        $progressBarColor = 'bg-green-500';
+                        $messageClass = 'text-green-600 font-bold';
+                        $messageText = '🎉 Daily calorie goal reached!';
+                    } else {
+                        // Normal progress - BLUE
+                        $progressBarColor = 'bg-indigo-500';
+                        $messageClass = 'text-gray-500';
+                        $messageText = 'Keep going...';
+                    }
+                    
+                    // Calculate percentage (cap at 100% for display when exceeded)
+                    $display_percent = min(100, $calorie_percent);
                     ?>
 
                     <div class="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden">
-                        <div class="h-4 rounded-full transition-all duration-500 <?= $progressBarColor ?>" style="width: <?= $calorie_percent ?>%;">
+                        <div class="h-4 rounded-full transition-all duration-500 <?= $progressBarColor ?>" style="width: <?= $display_percent ?>%;">
                             <span class="text-xs font-medium text-white absolute inset-0 flex items-center justify-center">
-                                <?= $calorie_percent ?>%
+                                <?= $display_percent ?>%
                             </span>
                         </div>
                     </div>
@@ -653,13 +765,29 @@ $current_plan = $diet_plan_suggestions[$plan_key];
                 </div>
 
                 <h3 class="text-xl font-semibold mb-3 border-b pb-2">Log Your Meal</h3>
-                <form method="POST" action="Membership.php" enctype="multipart/form-data">
+                
+                <?php if ($has_exceeded_calories): ?>
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class='bx bx-error-circle text-red-400 text-2xl'></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-red-800 font-bold">Logging Disabled</p>
+                                <p class="text-red-700 mt-1">You have exceeded your daily calorie intake of <?= number_format($daily_calorie_goal) ?> kcal. You cannot log more meals today.</p>
+                                <p class="text-red-600 text-sm mt-2">Please use the "Reset Today's Logs" button below to start fresh tomorrow.</p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                
+                <form method="POST" action="Membership.php" enctype="multipart/form-data" id="log-meal-form" class="<?= $has_exceeded_calories ? 'disabled-form' : '' ?>">
                     <input type="hidden" name="user_id" value="<?= htmlspecialchars($user_id) ?>">
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="flex flex-col">
                             <label for="meal_type" class="text-sm font-medium text-gray-500 mb-1">Meal Type</label>
-                            <select name="meal_type" id="meal_type" class="p-2 border border-gray-300 rounded-lg" required>
+                            <select name="meal_type" id="meal_type" class="p-2 border border-gray-300 rounded-lg" required <?= $has_exceeded_calories ? 'disabled' : '' ?>>
                                 <option value="Breakfast">Breakfast</option>
                                 <option value="Lunch">Lunch</option>
                                 <option value="Dinner">Dinner</option>
@@ -669,25 +797,31 @@ $current_plan = $diet_plan_suggestions[$plan_key];
                         <div class="flex flex-col">
                             <label for="calories_intake" class="text-sm font-medium text-gray-500 mb-1">Calories (kcal)</label>
                             <input type="number" name="calories_intake" id="calories_intake" min="1" step="0.1"
-                                class="p-2 border border-gray-300 rounded-lg" placeholder="e.g. 500.5" required>
+                                class="p-2 border border-gray-300 rounded-lg" placeholder="e.g. 500.5" required <?= $has_exceeded_calories ? 'disabled' : '' ?>>
                         </div>
                     </div>
                     
                     <div class="flex flex-col mb-4">
                         <label for="description" class="text-sm font-medium text-gray-500 mb-1">Description</label>
                         <input type="text" name="description" id="description" 
-                            class="p-2 border border-gray-300 rounded-lg" placeholder="What did you eat?" required>
+                            class="p-2 border border-gray-300 rounded-lg" placeholder="What did you eat?" required <?= $has_exceeded_calories ? 'disabled' : '' ?>>
                     </div>
                     
                     <div class="flex flex-col mb-4">
                         <label for="food_picture" class="text-sm font-medium text-gray-500 mb-1">Upload Picture (Optional)</label>
                         <input type="file" name="food_picture" id="food_picture" accept="image/jpeg, image/png, image/gif"
-                            class="p-2 border border-gray-300 rounded-lg bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                            class="p-2 border border-gray-300 rounded-lg bg-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100" <?= $has_exceeded_calories ? 'disabled' : '' ?>>
                     </div>
                     
-                    <button type="submit" name="log_calories" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out">
-                        <i class='bx bx-check-circle mr-2'></i> Log Meal
-                    </button>
+                    <?php if ($has_exceeded_calories): ?>
+                        <button type="button" class="w-full bg-gray-400 text-white font-bold py-2 px-6 rounded-lg shadow-md cursor-not-allowed" disabled>
+                            <i class='bx bx-block mr-2'></i> Cannot Log Meal (Calorie Limit Exceeded)
+                        </button>
+                    <?php else: ?>
+                        <button type="submit" name="log_calories" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out">
+                            <i class='bx bx-check-circle mr-2'></i> Log Meal
+                        </button>
+                    <?php endif; ?>
                 </form>
 
                 <h3 class="text-xl font-semibold mb-3 border-b pb-2 mt-8 flex justify-between items-center">
@@ -752,7 +886,7 @@ $current_plan = $diet_plan_suggestions[$plan_key];
                 </div>
                 <h3 class="mt-4 text-xl font-bold text-gray-900">Confirm Reset</h3>
                 <div class="mt-2">
-                    <p class="text-sm text-gray-500">Are you sure you want to **permanently delete ALL** of your dietary logs for **today**? This action cannot be undone.</p>
+                    <p class="text-sm text-gray-500">Are you sure you want to permanently delete ALL of your dietary logs for today? This action cannot be undone.</p>
                 </div>
             </div>
             <div class="mt-5 sm:mt-6 space-y-3">
@@ -806,7 +940,19 @@ $current_plan = $diet_plan_suggestions[$plan_key];
             resetModal.querySelector('.bg-white').classList.add('scale-95');
         }
 
+        // --- 3. Prevent form submission if calorie limit exceeded ---
         document.addEventListener('DOMContentLoaded', () => {
+            const logForm = document.getElementById('log-meal-form');
+            if (logForm) {
+                logForm.addEventListener('submit', function(e) {
+                    <?php if ($has_exceeded_calories): ?>
+                        e.preventDefault();
+                        alert('You have exceeded your daily calorie intake. Cannot log more meals today.');
+                        return false;
+                    <?php endif; ?>
+                });
+            }
+            
             // --- Sidebar Toggle Logic ---
             const moreToggle = document.querySelector('.more-toggle');
             const submenu = document.querySelector('.more-menu .submenu');
