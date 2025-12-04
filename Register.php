@@ -109,7 +109,6 @@ $stmt->bind_param(
 </head>
 
 <body>
-
 <div class="wrapper">
   <form method="POST" id="registerForm">
     <a href="Nonmember.php" class="back-icon"><i class='bx bx-arrow-back'></i></a>
@@ -133,9 +132,13 @@ $stmt->bind_param(
       </div>
 
       <div class="input-box">
-        <input type="password" name="password" id="password" placeholder="Password" required />
-        <i class='bx bx-show' id="togglePassword" style="cursor: pointer;"></i>
-      </div>
+    <div id="passwordWarning" class="password-warning">
+        Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, and one number.
+    </div>
+    <input type="password" name="password" id="password" placeholder="Password" required />
+    <i class='bx bx-show' id="togglePassword" style="cursor: pointer;"></i>
+</div>
+
 
       <div class="input-box">
         <input type="password" id="repassword" placeholder="Confirm Password" required />
@@ -267,11 +270,20 @@ function showStep2() {
     return;
   }
 
-  const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-  if (!passwordPattern.test(password)) {
-    showToast("Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, and one number.");
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+const warning = document.getElementById("passwordWarning");
+
+if (!passwordPattern.test(password)) {
+    warning.classList.add("show");
+
+    setTimeout(() => {
+        warning.classList.remove("show");
+    }, 4500); // hides after 3 seconds
+
     return;
-  }
+}
+
+
 
   fetch("verify_code.php", {
     method: "POST",

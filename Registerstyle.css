@@ -414,3 +414,36 @@ body {
 .toast-alert button:hover {
   opacity: 0.8;
 }
+
+.password-warning {
+  display: none;
+  background: #ffdddd;
+  color: #b10000;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 6px;
+  font-size: 13px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.password-warning.show {
+  display: block;
+  animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
