@@ -534,6 +534,47 @@ $current_plan = $diet_plan_suggestions[$plan_key];
     </ul>
 </div>
 
+<!-- Notification Bell -->
+<div id="notifBell" style="
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 26px;
+    z-index: 9999;
+">
+    🔔
+    <span id="notifCount" style="
+        background: red;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 50%;
+        font-size: 12px;
+        position: relative;
+        top: -10px;
+        left: -8px;
+        display: none;
+    ">0</span>
+</div>
+
+<!-- Notification Panel -->
+<div id="notifPanel" style="
+    position: fixed;
+    top: 55px;
+    right: 20px;
+    width: 260px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 10px;
+    display: none;
+    z-index: 9999;
+">
+    <h4 style="margin: 0 0 10px;">Notifications</h4>
+    <ul id="notifList" style="list-style: none; padding:0; margin:0;"></ul>
+</div>
+
+
     <main class="bg-white rounded-2xl w-full drop-shadow-lg select-none p-6" role="main">
         <h1 class="text-2xl font-bold leading-tight mb-6 text-black">User Profile & Details</h1>
 
@@ -997,5 +1038,45 @@ $current_plan = $diet_plan_suggestions[$plan_key];
             }
         });
     </script>
+
+    <script>
+const notifBell = document.getElementById("notifBell");
+const notifPanel = document.getElementById("notifPanel");
+const notifCount = document.getElementById("notifCount");
+const notifList = document.getElementById("notifList");
+
+// TEMPORARY SAMPLE NOTIFICATIONS
+const notifications = [
+    "Your booking has been confirmed.",
+    "Trainer updated availability.",
+    "Payment successfully processed."
+];
+
+// Load notifications
+function loadNotifications() {
+    notifList.innerHTML = "";
+    notifications.forEach(n => {
+        const li = document.createElement("li");
+        li.textContent = n;
+        li.style.padding = "8px 0";
+        notifList.appendChild(li);
+    });
+
+    if (notifications.length > 0) {
+        notifCount.style.display = "inline-block";
+        notifCount.textContent = notifications.length;
+    }
+}
+
+// Toggle panel
+notifBell.addEventListener("click", () => {
+    notifPanel.style.display = notifPanel.style.display === "none" ? "block" : "none";
+    notifCount.style.display = "none"; // mark as read
+});
+
+// Load on page start
+loadNotifications();
+</script>
+
 </body>
 </html>
