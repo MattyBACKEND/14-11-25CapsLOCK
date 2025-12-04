@@ -6,133 +6,234 @@
     <link rel="stylesheet" href="Nonmemberstyle.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better scrollbar on smaller screens and non-safari browsers */
+        .scrollbar-thin::-webkit-scrollbar {
+            height: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5); /* gray-400 with opacity */
+            border-radius: 3px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        /* Hide scrollbar for Safari and other browsers that don't support the webkit vendor prefix */
+        .no-scrollbar-safari {
+            /* For Firefox */
+            scrollbar-width: none;
+            -ms-overflow-style: none; /* For IE and Edge */
+        }
+
+        /* Ensure the main content takes the full available width */
+        .main.content {
+            width: 100%;
+        }
+
+        /* * 🔥 DESKTOP/LARGE SCREEN STYLES (CENTERED AND MAXIMIZED)
+         * - This is the default style
+         */
+        @media (min-width: 1024px) {
+            /* 1. Center the flex container (Row layout) */
+            .centered-cards-desktop {
+                justify-content: center;
+                /* Ensure row direction for desktop */
+                flex-direction: row; 
+                overflow-x: auto; /* Enable horizontal scroll if needed */
+            }
+
+            /* 2. Increase card size for maximization */
+            .full-width-cards > a {
+                /* Set a very large fixed width to ensure they dominate the screen */
+                min-width: 480px; 
+            }
+            
+            /* Restore horizontal spacing */
+            .full-width-cards {
+                padding-left: 1.5rem !important;
+                padding-right: 1.5rem !important;
+                 /* Reset scroll snapping */
+                snap-x: none;
+                snap-mandatory: none;
+            }
+            .full-width-cards > a {
+                /* Restore horizontal margin between cards */
+                margin-left: 0;
+                margin-right: 1.5rem; /* Space after the card */
+            }
+            .full-width-cards > a:last-child {
+                margin-right: 0; /* No space after the last card */
+            }
+        }
+        
+        /* * 🔥 MOBILE STYLES (Vertical Stack and Full Width)
+         */
+        @media (max-width: 1023px) {
+            /* Adjust padding for mobile screens */
+            .main.content {
+                padding: 1.5rem;
+                margin-left: 0; 
+            }
+            
+            /* 🛑 KEY CHANGE: Switch to vertical stacking (column) */
+            .full-width-cards {
+                /* Change flex direction to column */
+                flex-direction: column; 
+                /* Remove horizontal scroll */
+                overflow-x: hidden; 
+                /* Use vertical scroll naturally with the column layout */
+                flex-wrap: nowrap;
+                /* Remove scroll snapping */
+                snap-x: none;
+                snap-mandatory: none;
+                /* Ensure container takes full width */
+                width: 100%;
+                /* Add padding back for layout */
+                padding-left: 1.5rem !important;
+                padding-right: 1.5rem !important;
+                scroll-padding-left: 0 !important;
+                scroll-padding-right: 0 !important;
+            }
+
+            .full-width-cards > a {
+                /* Make the card use full available width */
+                width: 100%;
+                min-width: unset; 
+                /* Add vertical margin between stacked cards */
+                margin-bottom: 1rem; 
+                /* Ensure no horizontal margin remains */
+                margin-left: 0;
+                margin-right: 0;
+            }
+            
+            /* Adjust padding inside the main content for better look in vertical layout */
+            .main.content {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+    </style>
 </head>
-<body>
+
+<body class="bg-gray-100 min-h-screen">
 
 <div class="sidebar">
     <h2>Non Member Panel</h2>
     <ul>
-        <li><a href="#"><i class='bx bx-dumbbell'></i> Workouts</a></li>
+        <li><a href="#" class="bg-gray-700 text-white"><i class='bx bx-dumbbell'></i> Workouts</a></li>
         <li><a href="Register.php"><i class='bx bxs-user-badge'></i> Membership</a></li>
         <li><a href="Loginpage.php"><i class='bx bx-log-out'></i> Logout</a></li>
     </ul>
-
 </div>
 
 
-<div class="main content w-full bg-white rounded-lg shadow-md p-6">
-    <!-- Header -->
-    <h2 class="text-2xl font-bold mb-5 select-none">Body Focus</h2>
+<div class="main content p-8 md:p-10 lg:p-12">
+    <h2 class="text-3xl font-extrabold text-gray-800 mb-6 select-none border-b pb-3">Body Focus </h2>
 
-    <!-- Body Target Tabs -->
-    <div class="mb-6 flex space-x-3 overflow-x-auto scrollbar-thin no-scrollbar-safari">
-
-      <button class="flex-shrink-0 px-4 py-1.5 font-semibold rounded-full border border-blue-500 text-blue-600 bg-blue-100 focus:outline-none" aria-current="true">Abs</button>
-
-      <button class="flex-shrink-0 px-4 py-1.5 font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 focus:outline-none" type="button" onclick="window.location.href='Arm.php'">Arm</button>
-
-      <button class="flex-shrink-0 px-4 py-1.5 font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 focus:outline-none" type="button" onclick="window.location.href='Chest.php'">Chest</button>
-
-      <button class="flex-shrink-0 px-4 py-1.5 font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 focus:outline-none" type="button" onclick="window.location.href='Leg.php'">Leg</button>
-
-      <button class="flex-shrink-0 px-4 py-1.5 font-medium rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 focus:outline-none" type="button" onclick="window.location.href='Fullbody.php'">Full body</button>
-
+    <div class="mb-8 flex space-x-4 overflow-x-auto scrollbar-thin no-scrollbar-safari justify-center">
+      <button class="flex-shrink-0 px-6 py-2 text-base font-bold rounded-full text-white bg-blue-600 shadow-lg shadow-blue-500/50 hover:bg-blue-700 transition-colors focus:outline-none" aria-current="true">Abs</button>
+      <button class="flex-shrink-0 px-6 py-2 text-base font-medium rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none" type="button" onclick="window.location.href='Arm.php'">Arm</button>
+      <button class="flex-shrink-0 px-6 py-2 text-base font-medium rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none" type="button" onclick="window.location.href='Chest.php'">Chest</button>
+      <button class="flex-shrink-0 px-6 py-2 text-base font-medium rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none" type="button" onclick="window.location.href='Leg.php'">Leg</button>
+      <button class="flex-shrink-0 px-6 py-2 text-base font-medium rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors focus:outline-none" type="button" onclick="window.location.href='Fullbody.php'">Full body</button>
     </div>
 
-    <!-- Exercises list scroll container -->
     <div
-      class="flex space-x-6 overflow-x-auto scrollbar-thin snap-x snap-mandatory"
-      style="scroll-padding-left: 1.5rem; scroll-padding-right: 1.5rem;"
+      class="flex flex-col lg:flex-row space-x-6 pb-4 full-width-cards centered-cards-desktop"
     >
 
+        <a href="Abs-beginner.php" class="no-underline">
+            <div class="min-w-[380px] flex-shrink-0 bg-white rounded-2xl p-4 shadow-2xl hover:ring-4 hover:ring-blue-600 transition-all duration-200 cursor-pointer select-none">
+                <div class="relative mb-4">
+                    <img
+                        src="https://www.mensjournal.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_700/MTk2MTM2NjEyMDQwNTQ5NTIx/abs-muscular-muscle-ripped-main.webp"
+                        alt="Abs Beginner"
+                        class="w-full h-40 rounded-xl object-cover"
+                        loading="lazy"
+                    />
+                    <span class="absolute top-2 left-2 bg-blue-600 text-white text-md font-extrabold px-3 py-1.5 rounded-full shadow-lg">
+                         BEGINNER
+                    </span>
+                </div>
+                <h3 class="font-black text-2xl text-gray-900 leading-tight mb-2">CORE FOUNDATION</h3>
+                <p class="text-gray-600 mt-1 text-base">Targeted routine for building foundational abdominal strength.</p>
+                
+                <div class="flex justify-between items-center mt-4 pt-4 border-t-2 border-gray-200">
+                    <div class="text-base">
+                        <p class="font-bold text-gray-800">⏱️ <span class="text-lg">30 - 40</span> mins</p>
+                        <p class="font-semibold text-gray-500">🏋️ 7 Exercises</p>
+                    </div>
+                    <div class="flex space-x-1 items-center">
+                        <span class="text-sm font-bold text-gray-700">Difficulty:</span>
+                        <i class='bx bxs-circle text-blue-500 text-xs'></i>
+                        <i class='bx bx-circle text-gray-300 text-xs'></i>
+                        <i class='bx bx-circle text-gray-300 text-xs'></i>
+                    </div>
+                </div>
+            </div>
+        </a>
 
-      <a href="Abs-beginner.php" class="no-underline">
-  <!-- Abs Beginner -->
-  <div class="snap-start min-w-[300px] flex-shrink-0 flex items-center space-x-4 bg-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer select-none">
-    <img
-      src="https://www.mensjournal.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_700/MTk2MTM2NjEyMDQwNTQ5NTIx/abs-muscular-muscle-ripped-main.webp"
-      alt="Abs Beginner"
-      class="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-      loading="lazy"
-    />
-    <div>
-      <h3 class="font-bold text-lg text-gray-900">Abs Beginner</h3>
-      <p class="text-gray-500 mt-1 text-sm">30 - 40 mins · 7 Exercises</p>
-      <div class="mt-2 flex space-x-1">
-        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-        <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-        <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-      </div>
+        <a href="Abs-intermediate.php" class="no-underline">
+            <div class="min-w-[380px] flex-shrink-0 bg-white rounded-2xl p-4 shadow-2xl hover:ring-4 hover:ring-blue-600 transition-all duration-200 cursor-pointer select-none">
+                <div class="relative mb-4">
+                    <img
+                        src="https://www.mensfitness.com/.image/w_3840,q_auto:good,c_fill,ar_4:3/MjEyMzI4Mjk2NzU3NjAxOTIw/bodybuilders-abdominal-muscles.jpg"
+                        alt="Abs Intermediate"
+                        class="w-full h-40 rounded-xl object-cover"
+                        loading="lazy"
+                    />
+                    <span class="absolute top-2 left-2 bg-yellow-500 text-white text-md font-extrabold px-3 py-1.5 rounded-full shadow-lg">
+                         INTERMEDIATE
+                    </span>
+                </div>
+                <h3 class="font-black text-2xl text-gray-900 leading-tight mb-2">ABS POWER UP</h3>
+                <p class="text-gray-600 mt-1 text-base">Step up your core game with more challenging plank variations.</p>
+                <div class="flex justify-between items-center mt-4 pt-4 border-t-2 border-gray-200">
+                    <div class="text-base">
+                        <p class="font-bold text-gray-800">⏱️ <span class="text-lg">34 - 45</span> mins</p>
+                        <p class="font-semibold text-gray-500">🏋️ 7 Exercises</p>
+                    </div>
+                    <div class="flex space-x-1 items-center">
+                        <span class="text-sm font-bold text-gray-700">Difficulty:</span>
+                        <i class='bx bxs-circle text-blue-500 text-xs'></i>
+                        <i class='bx bxs-circle text-blue-500 text-xs'></i>
+                        <i class='bx bx-circle text-gray-300 text-xs'></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <a href="Abs-advanced.php" class="no-underline">
+            <div class="min-w-[380px] flex-shrink-0 bg-white rounded-2xl p-4 shadow-2xl hover:ring-4 hover:ring-blue-600 transition-all duration-200 cursor-pointer select-none">
+                <div class="relative mb-4">
+                    <img
+                        src="https://steelsupplements.com/cdn/shop/articles/shutterstock_666511822_1600x.jpg?v=1612709949"
+                        alt="Abs Advanced"
+                        class="w-full h-40 rounded-xl object-cover"
+                        loading="lazy"
+                    />
+                    <span class="absolute top-2 left-2 bg-red-600 text-white text-md font-extrabold px-3 py-1.5 rounded-full shadow-lg">
+                         ADVANCED
+                    </span>
+                </div>
+                <h3 class="font-black text-2xl text-gray-900 leading-tight mb-2">ELITE ABS SHREDDER</h3>
+                <p class="text-gray-600 mt-1 text-base">High-intensity routine for ultimate definition and core stability.</p>
+                <div class="flex justify-between items-center mt-4 pt-4 border-t-2 border-gray-200">
+                    <div class="text-base">
+                        <p class="font-bold text-gray-800">⏱️ <span class="text-lg">40 - 50</span> mins</p>
+                        <p class="font-semibold text-gray-500">🏋️ 8 Exercises</p>
+                    </div>
+                    <div class="flex space-x-1 items-center">
+                        <span class="text-sm font-bold text-gray-700">Difficulty:</span>
+                        <i class='bx bxs-circle text-blue-500 text-xs'></i>
+                        <i class='bx bxs-circle text-blue-500 text-xs'></i>
+                        <i class='bx bxs-circle text-blue-500 text-xs'></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+        
     </div>
-  </div>
-</a>
-
-
-      <a href="Abs-intermediate.php" class="no-underline">
-  <!-- Abs Intermediate -->
-  <div
-    class="snap-start min-w-[300px] flex-shrink-0 flex items-center space-x-4 bg-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer select-none"
-  >
-    <img
-      src="https://www.mensfitness.com/.image/w_3840,q_auto:good,c_fill,ar_4:3/MjEyMzI4Mjk2NzU3NjAxOTIw/bodybuilders-abdominal-muscles.jpg"
-      alt="Abs Intermediate"
-      class="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-      loading="lazy"
-    />
-    <div>
-      <h3 class="font-bold text-lg text-gray-900">Abs Intermediate</h3>
-      <p class="text-gray-500 mt-1 text-sm">34 - 45 mins · 7 Exercises</p>
-      <div class="mt-2 flex space-x-1">
-        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-        <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-      </div>
     </div>
-  </div>
-</a>
-
-
-      <a href="Abs-advanced.php" class="no-underline">
-  <!-- Abs Advanced -->
-  <div
-    class="snap-start min-w-[300px] flex-shrink-0 flex items-center space-x-4 bg-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer select-none"
-  >
-    <img
-      src="https://steelsupplements.com/cdn/shop/articles/shutterstock_666511822_1600x.jpg?v=1612709949"
-      alt="Abs Advanced"
-      class="w-20 h-20 rounded-lg object-cover flex-shrink-0"
-      loading="lazy"
-    />
-    <div>
-      <h3 class="font-bold text-lg text-gray-900">Abs Advanced</h3>
-      <p class="text-gray-500 mt-1 text-sm">40 - 50 mins · 8 Exercises</p>
-      <div class="mt-2 flex space-x-1">
-        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M11.3 1.046a1 1 0 00-1.67.742v3.034H6a1 1 0 00-.832 1.555l3.33 5.19-3.33 5.193A1 1 0 006 18h3.63v3.034a1 1 0 001.67.742l6.985-7.956a1 1 0 000-1.484L11.3 1.046z"/>
-        </svg>
-      </div>
-    </div>
-  </div>
-</a>
-
-
 </body>
 </html>
