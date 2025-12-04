@@ -27,6 +27,43 @@ if (isset($_SESSION['email'])) {
             $last_log_stmt->execute();
             $last_log_result = $last_log_stmt->get_result()->fetch_assoc();
             $last_log_stmt->close();
+            $last_log_date = $last_log_result['last_log_date'] ?? null;
+            $today = date('Y-m-d');
+            
+            // If last log is from a previous day, auto-reset is not needed because
+            // the system already filters by today's date
+            // But we can add a cleanup for old temp data if needed
+            
+            // Mark that we've checked today
+            $_SESSION['last_reset_check'] = $today;
+        }
+    }
+}
+
+if (isset($_SESSION['email'])) {
+    $emailToFetch = $_SESSION['email'];
+    
+    // Get user ID
+    $user_sql = "SELECT id FROM users WHERE email = ?";
+    $user_stmt = $conn->prepare($user_sql);
+    $user_stmt->bind_param("s", $emailToFetch);
+    $user_stmt->execute();
+    $user_result = $user_stmt->get_result();
+    $user_data = $user_result->fetch_assoc();
+    $user_stmt->close();
+    
+    if ($user_data) {
+        $user_id = $user_data['id'];
+        
+        // Check if we've already processed today's reset
+        if (!isset($_SESSION['last_reset_check']) || $_SESSION['last_reset_check'] != date('Y-m-d')) {
+            // Get the date of the most recent log
+            $last_log_sql = "SELECT MAX(log_date) as last_log_date FROM dietary_logs WHERE user_id = ?";
+            $last_log_stmt = $conn->prepare($last_log_sql);
+            $last_log_stmt->bind_param("i", $user_id);
+            $last_log_stmt->execute();
+            $last_log_result = $last_log_stmt->get_result()->fetch_assoc();
+            $last_log_stmt->close();
             
             $last_log_date = $last_log_result['last_log_date'] ?? null;
             $today = date('Y-m-d');
